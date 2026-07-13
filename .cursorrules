@@ -1,0 +1,72 @@
+# Appium + WebdriverIO + TypeScript — project rules
+
+You are working in a professional Android mobile automation suite (WebdriverIO, Appium 2, TypeScript, Mocha). Prefer an architect’s approach: scalable Screen Object Model, explicit waits, and type-safe commands. Avoid chaotic growth.
+
+## Architecture
+
+- Keep a clear separation of concerns:
+  - `tests/**` — intent only (what the user does / what we assert)
+  - `src/screens/**` — screen/component actions
+  - `*.selectors.ts` — locators only
+  - `src/helpers/**` — reusable waits/gestures (no screen business logic)
+  - `src/config/**` + `wdio.conf.ts` — env, capabilities, runner config
+- New feature → new `src/screens/<feature>/` pair (selectors + screen/component) + `tests/<domain>/`. Never dump locators into a global selectors file.
+- Shared chrome (nav drawer, header, cart icon) lives under `src/screens/components/`.
+
+## Specs must not own locators or waits
+
+- Specs call **screen/component methods only**. Do not put raw `$('...')`, `$$`, or xpath strings in specs.
+- Specs must not import `*.selectors.ts` — only screens/components (and helpers if truly needed).
+- Specs must not set Appium capabilities, device names, or APK paths. Those belong in env/config only.
+- Prefer readable intent, e.g. `await SideMenu.open()` then assert via screen method or expect on a screen-exposed state — not locator plumbing.
+
+## Selectors
+
+- Locators live in modular `*.selectors.ts` files next to their screen/component.
+- Export selector objects with `as const` for type safety.
+- Locator preference (strict order):
+  1. Accessibility id (`~...` / content-desc)
+  2. Resource id (`id=...` / package:id)
+  3. UiSelector / Android UIAutomator
+  4. XPath — last resort only; comment why if used
+- Keep selectors free of clicks, waits, and assertions.
+
+## Waits and stability
+
+- Prefer `waitForExist`, `waitForDisplayed`, and `expect-webdriverio` matchers (`toBeDisplayed`, `toExist`, etc.) over fixed sleeps.
+- **Forbidden in tests and screens:** `browser.pause(...)`, `driver.pause(...)`, bare `setTimeout` / `sleep` used to “wait for the UI”.
+- Wait for the **next stable UI state** (element exists/displayed/enabled), not an arbitrary animation delay.
+- Use shared helpers from `src/helpers/waits.ts` when wrapping common wait patterns; keep helpers thin.
+
+## Type safety and commands
+
+- Always use `async`/`await`. Do not use sync mode.
+- Prefer WDIO element types (`ChainablePromiseElement`, `ChainablePromiseArray`). Do **not** type elements as `any`.
+- Prefer typed config/env (`loadAndroidEnv()`) over reading `process.env` ad hoc in screens or specs.
+- Keep TypeScript `strict` happy; do not weaken `tsconfig` to hide automation debt.
+
+## Appium / WebdriverIO config
+
+- Use W3C capability keys with the `appium:` prefix.
+- Local emulator: keep `maxInstances: 1` unless there is an explicit parallel strategy.
+- Do not hardcode device names, platform versions, or APK paths in `wdio.conf.ts` — load them from `.env` via `src/config`.
+- Do not commit `.env` or APK binaries; use `.env.example` and `apps/android/` (gitignored APKs).
+
+## Code style for this repo
+
+- Match existing file layout and naming (`CatalogScreen.ts`, `catalog.selectors.ts`, `*.smoke.spec.ts`).
+- Prefer small, focused methods on screens (one user action or one assertion helper per method).
+- No god-classes: split by screen/component as the app grows.
+- Comments only for non-obvious “why” (e.g. splash → `appWaitActivity: '*'`); no narrating comments.
+
+## When adding tests
+
+1. Add/extend selectors in `*.selectors.ts`
+2. Add/extend screen or component methods
+3. Add/extend the spec that calls those methods
+4. Assert with expect-webdriverio or screen helpers — never pause-then-hope
+
+## Out of scope unless asked
+
+- Do not add Sauce Labs cloud, Allure, CI, iOS, or Cucumber unless the user explicitly requests it.
+- Do not commit unless the user asks. Prefer small reviewable batches on feature branches.
