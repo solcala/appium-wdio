@@ -34,7 +34,9 @@ You are working in a professional Android mobile automation suite (WebdriverIO, 
 ## Waits and stability
 
 - Prefer `waitForExist`, `waitForDisplayed`, and `expect-webdriverio` matchers (`toBeDisplayed`, `toExist`, etc.) over fixed sleeps.
-- **Forbidden in tests and screens:** `browser.pause(...)`, `driver.pause(...)`, bare `setTimeout` / `sleep` used to “wait for the UI”.
+- The use of `browser.pause` or `driver.pause` is strictly forbidden in all files. The only allowed method for non-DOM waiting is the `waitStable` helper from `src/helpers/waits.ts`.
+- Any usage of `waitStable` in a test spec must be preceded by a comment explaining the specific animation or state transition it is waiting for.
+- **Also forbidden:** bare `setTimeout` / `sleep` used to “wait for the UI”.
 - Wait for the **next stable UI state** (element exists/displayed/enabled), not an arbitrary animation delay.
 - Use shared helpers from `src/helpers/waits.ts` when wrapping common wait patterns; keep helpers thin.
 
