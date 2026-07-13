@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# App binaries (download locally)
+apps/android/*.apk
+apps/android/*.aab
+!apps/android/.gitkeep
+
+# Appium
+.adapters/
+*.log
+
+# WDIO / test artifacts
+.wdio-chrome-data/
+allure-results/
+allure-report/
+test-results/
+screenshots/
+videos/
+errorShots/
+logs/
+
+# TypeScript / build
+dist/
+*.tsbuildinfo
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Coverage / misc
+coverage/
+tmp/
+temp/

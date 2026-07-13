@@ -1,0 +1,33 @@
+{
+  "name": "appium-wdio",
+  "version": "1.0.0",
+  "description": "Professional Android mobile automation suite with WebdriverIO, TypeScript, and Appium 2",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test:android": "wdio run ./wdio.conf.ts",
+    "appium:driver:install": "appium driver install uiautomator2",
+    "appium:driver:list": "appium driver list --installed",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.13.10",
+    "@wdio/appium-service": "^9.12.0",
+    "@wdio/cli": "^9.12.0",
+    "@wdio/local-runner": "^9.12.0",
+    "@wdio/mocha-framework": "^9.12.0",
+    "@wdio/spec-reporter": "^9.12.0",
+    "@wdio/types": "^9.12.0",
+    "appium": "^2.19.0",
+    "appium-uiautomator2-driver": "^4.2.0",
+    "dotenv": "^16.4.7",
+    "expect-webdriverio": "^5.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2",
+    "webdriverio": "^9.12.0"
+  }
+}
