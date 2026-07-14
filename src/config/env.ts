@@ -13,6 +13,12 @@ export interface AndroidEnv {
   readonly appPath: string;
 }
 
+export interface IosEnv {
+  readonly deviceName: string;
+  readonly platformVersion: string;
+  readonly appPath: string;
+}
+
 function requireEnv(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) {
@@ -36,5 +42,17 @@ export function loadAndroidEnv(): AndroidEnv {
     deviceName: requireEnv('ANDROID_DEVICE_NAME'),
     platformVersion: requireEnv('ANDROID_PLATFORM_VERSION'),
     appPath: resolveAppPath(requireEnv('APP_PATH')),
+  };
+}
+
+/**
+ * Typed, validated iOS Simulator run settings loaded from `.env`.
+ * Keeps device/.app details out of committed WDIO config.
+ */
+export function loadIosEnv(): IosEnv {
+  return {
+    deviceName: requireEnv('IOS_DEVICE_NAME'),
+    platformVersion: requireEnv('IOS_PLATFORM_VERSION'),
+    appPath: resolveAppPath(requireEnv('IOS_APP_PATH')),
   };
 }

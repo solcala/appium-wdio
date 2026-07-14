@@ -1,16 +1,16 @@
-import { buildAndroidCapabilities } from './src/config/android.capabilities.js';
-
-export const config: WebdriverIO.Config = {
+/**
+ * Shared WDIO options for local Appium runs (Android emulator + iOS Simulator).
+ * Platform-specific configs merge this with their capabilities.
+ */
+export const sharedConfig: Omit<WebdriverIO.Config, 'capabilities'> = {
   runner: 'local',
   tsConfigPath: './tsconfig.json',
 
   specs: ['./tests/**/*.ts'],
   exclude: [],
 
-  // Local emulators do not tolerate uncontrolled parallel sessions
+  // Local simulators/emulators do not tolerate uncontrolled parallel sessions
   maxInstances: 1,
-
-  capabilities: buildAndroidCapabilities(),
 
   logLevel: 'info',
   bail: 0,

@@ -25,7 +25,9 @@
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
-    "wdio.conf.ts"
+    "wdio.shared.conf.ts",
+    "wdio.android.conf.ts",
+    "wdio.ios.conf.ts"
   ],
   "exclude": [
     "node_modules",
