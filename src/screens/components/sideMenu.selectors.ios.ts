@@ -1,10 +1,13 @@
 import type { SideMenuSelectors } from './sideMenu.selectors.types.js';
 
 /**
- * Provisional iOS locators (aligned with common My Demo App a11y labels).
- * Batch 7.2 will verify/adjust against Appium Inspector on Simulator.
+ * Locators from Sauce Labs My Demo App iOS storyboard / UITests PageObject:
+ * - More-tab-item opens the menu (tab bar, not Android hamburger)
+ * - Login label text is "Login" (not "Log In")
+ * - Tappable control keeps accessibility id LogOut-menu-item
  */
 export const sideMenuSelectors: SideMenuSelectors = {
-  menuButton: '~View menu',
-  logInItem: '~Log In',
+  menuButton: '~More-tab-item',
+  logInItem: '-ios predicate string:label == "Login"',
+  logInButton: '~LogOut-menu-item',
 };

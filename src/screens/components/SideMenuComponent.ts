@@ -19,18 +19,22 @@ class SideMenuComponent {
     return $(this.selectors.logInItem);
   }
 
+  private get logInButton() {
+    return $(this.selectors.logInButton);
+  }
+
   async open(): Promise<void> {
     await waitAndClick(this.menuButton);
   }
 
   async openLogIn(): Promise<void> {
     await this.open();
-    await waitAndClick(this.logInItem);
+    await waitAndClick(this.logInButton);
   }
 
   async waitUntilLogInVisible(): Promise<void> {
     await waitForDisplayed(this.logInItem, {
-      timeoutMsg: 'Expected Log In menu item to be displayed in the side drawer',
+      timeoutMsg: 'Expected Login menu item to be displayed in the side menu',
     });
   }
 
