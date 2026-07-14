@@ -1,13 +1,22 @@
+import { byPlatform } from '../../helpers/platform.js';
 import { waitAndClick, waitForDisplayed } from '../../helpers/waits.js';
-import { sideMenuSelectors } from './sideMenu.selectors.js';
+import { sideMenuSelectors as androidSelectors } from './sideMenu.selectors.android.js';
+import { sideMenuSelectors as iosSelectors } from './sideMenu.selectors.ios.js';
 
 class SideMenuComponent {
+  private get selectors() {
+    return byPlatform({
+      android: androidSelectors,
+      ios: iosSelectors,
+    });
+  }
+
   private get menuButton() {
-    return $(sideMenuSelectors.menuButton);
+    return $(this.selectors.menuButton);
   }
 
   private get logInItem() {
-    return $(sideMenuSelectors.logInItem);
+    return $(this.selectors.logInItem);
   }
 
   async open(): Promise<void> {
