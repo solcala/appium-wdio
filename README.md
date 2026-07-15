@@ -79,9 +79,15 @@ curl -L -o apps/ios/SauceLabs-Demo-App.Simulator.zip \
 unzip -o apps/ios/SauceLabs-Demo-App.Simulator.zip -d apps/ios
 ```
 
-Point `IOS_APP_PATH` at the extracted `.app` (name may vary inside the zip — confirm with `ls apps/ios`).
+Point `IOS_APP_PATH` at the extracted `.app` (typically `./apps/ios/Payload/My Demo App.app`).
 
 Bundle ID for recent builds: `com.saucelabs.mydemo.app.ios`.
+
+**Xcode / WebDriverAgent:** the Simulator runtime must match your Xcode iOS Simulator SDK (`xcodebuild -showsdks`). If `xcodebuild` reports missing platforms or Appium fails with WDA code 70, install the matching runtime:
+
+```bash
+xcodebuild -downloadPlatform iOS
+```
 
 ### Configure `.env`
 

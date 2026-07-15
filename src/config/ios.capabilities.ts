@@ -18,6 +18,11 @@ export function buildIosCapabilities(): Capabilities.RequestedStandaloneCapabili
       'appium:newCommandTimeout': 240,
       'appium:noReset': false,
       'appium:fullReset': false,
+      // Surfaces WDA/xcodebuild errors in Appium logs during local setup
+      'appium:showXcodeLog': true,
+      // First WDA build on a new Xcode/runtime can exceed default client timeouts
+      'appium:wdaLaunchTimeout': 120000,
+      'appium:wdaConnectionTimeout': 120000,
     },
   ];
 }

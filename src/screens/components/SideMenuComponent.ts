@@ -1,4 +1,4 @@
-import { byPlatform } from '../../helpers/platform.js';
+import { byPlatform, isIOS } from '../../helpers/platform.js';
 import { waitAndClick, waitForDisplayed } from '../../helpers/waits.js';
 import { sideMenuSelectors as androidSelectors } from './sideMenu.selectors.android.js';
 import { sideMenuSelectors as iosSelectors } from './sideMenu.selectors.ios.js';
@@ -25,6 +25,10 @@ class SideMenuComponent {
 
   async open(): Promise<void> {
     await waitAndClick(this.menuButton);
+    if (isIOS()) {
+      // Login row sits below the fold on the More menu
+      await this.logInButton.scrollIntoView();
+    }
   }
 
   async openLogIn(): Promise<void> {
