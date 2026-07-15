@@ -1,27 +1,44 @@
+import { byPlatform, isIOS } from '../../helpers/platform.js';
 import { waitAndClick, waitForDisplayed } from '../../helpers/waits.js';
-import { sideMenuSelectors } from './sideMenu.selectors.js';
+import { sideMenuSelectors as androidSelectors } from './sideMenu.selectors.android.js';
+import { sideMenuSelectors as iosSelectors } from './sideMenu.selectors.ios.js';
 
 class SideMenuComponent {
+  private get selectors() {
+    return byPlatform({
+      android: androidSelectors,
+      ios: iosSelectors,
+    });
+  }
+
   private get menuButton() {
-    return $(sideMenuSelectors.menuButton);
+    return $(this.selectors.menuButton);
   }
 
   private get logInItem() {
-    return $(sideMenuSelectors.logInItem);
+    return $(this.selectors.logInItem);
+  }
+
+  private get logInButton() {
+    return $(this.selectors.logInButton);
   }
 
   async open(): Promise<void> {
     await waitAndClick(this.menuButton);
+    if (isIOS()) {
+      // Login row sits below the fold on the More menu
+      await this.logInButton.scrollIntoView();
+    }
   }
 
   async openLogIn(): Promise<void> {
     await this.open();
-    await waitAndClick(this.logInItem);
+    await waitAndClick(this.logInButton);
   }
 
   async waitUntilLogInVisible(): Promise<void> {
     await waitForDisplayed(this.logInItem, {
-      timeoutMsg: 'Expected Log In menu item to be displayed in the side drawer',
+      timeoutMsg: 'Expected Login menu item to be displayed in the side menu',
     });
   }
 

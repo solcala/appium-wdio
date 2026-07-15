@@ -9,9 +9,7 @@ node_modules/
 apps/android/*.apk
 apps/android/*.aab
 !apps/android/.gitkeep
-apps/ios/*.app
-apps/ios/*.ipa
-apps/ios/*.zip
+apps/ios/**
 !apps/ios/.gitkeep
 
 # Appium
