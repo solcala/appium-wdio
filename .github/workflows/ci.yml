@@ -60,8 +60,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Appium UiAutomator2 driver
-        run: npx appium driver install uiautomator2
+      - name: Ensure Appium UiAutomator2 driver
+        # npm ci already pulls appium-uiautomator2-driver; skip install if registered
+        run: |
+          if npx appium driver list --installed --json 2>/dev/null | grep -q '"uiautomator2"'; then
+            echo "uiautomator2 already installed"
+            npx appium driver list --installed
+          else
+            npx appium driver install uiautomator2
+          fi
 
       - name: Download Android APK
         run: |
