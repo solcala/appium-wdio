@@ -70,5 +70,6 @@ You are working in a professional Android mobile automation suite (WebdriverIO, 
 
 ## Out of scope unless asked
 
-- Do not add Sauce Labs cloud, Allure, CI, iOS, or Cucumber unless the user explicitly requests it.
+- Do not add Sauce Labs cloud or Cucumber unless the user explicitly requests it.
+- CI (GitHub Actions) and Allure → GitHub Pages are already in the suite — extend them carefully; do not add unrelated reporting stacks.
 - Do not commit unless the user asks. Prefer small reviewable batches on feature branches.
