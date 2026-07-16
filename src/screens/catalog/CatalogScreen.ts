@@ -23,6 +23,10 @@ class CatalogScreen {
     return $(this.selectors.productByName(name));
   }
 
+  private productTapTarget(name: string) {
+    return $(this.selectors.productTapTarget(name));
+  }
+
   async waitUntilLoaded(): Promise<void> {
     await waitForDisplayed(this.screen, {
       timeoutMsg: 'Expected Catalog screen to be displayed',
@@ -41,7 +45,9 @@ class CatalogScreen {
       timeoutMsg: `Expected product "${name}" to be displayed in the catalog`,
     });
     await product.scrollIntoView();
-    await waitAndClick(product);
+    await waitAndClick(this.productTapTarget(name), {
+      timeoutMsg: `Expected tappable target for product "${name}" to be displayed`,
+    });
   }
 
   async openSort(): Promise<void> {
