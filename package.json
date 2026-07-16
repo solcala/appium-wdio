@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test:android": "wdio run ./wdio.android.conf.ts",
+    "test:android:smoke": "wdio run ./wdio.android.conf.ts --spec './tests/smoke/**/*.ts'",
     "test:ios": "wdio run ./wdio.ios.conf.ts",
     "appium:driver:install": "appium driver install uiautomator2 && appium driver install xcuitest",
     "appium:driver:list": "appium driver list --installed",

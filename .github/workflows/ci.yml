@@ -10,6 +10,11 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Keep in sync with README APK download instructions
+  ANDROID_APK_URL: https://github.com/saucelabs/my-demo-app-android/releases/download/2.2.0/mda-2.2.0-25.apk
+  ANDROID_APK_PATH: ./apps/android/mda-2.2.0-25.apk
+
 jobs:
   typecheck:
     name: typecheck
@@ -30,3 +35,62 @@ jobs:
 
       - name: Typecheck
         run: npm run typecheck
+
+  android-smoke:
+    name: android-smoke
+    needs: typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Appium UiAutomator2 driver
+        run: npx appium driver install uiautomator2
+
+      - name: Download Android APK
+        run: |
+          mkdir -p apps/android
+          curl -fsSL -o "${ANDROID_APK_PATH}" "${ANDROID_APK_URL}"
+          ls -lh "${ANDROID_APK_PATH}"
+
+      - name: Write CI .env
+        run: |
+          printf '%s\n' \
+            'ANDROID_DEVICE_NAME=emulator-5554' \
+            'ANDROID_PLATFORM_VERSION=14' \
+            "APP_PATH=${ANDROID_APK_PATH}" \
+            > .env
+          cat .env
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run Android smoke on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: npm run test:android:smoke

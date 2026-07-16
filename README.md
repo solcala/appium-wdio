@@ -133,6 +133,7 @@ npm run test:ios
 | Script | Purpose |
 | -------- | --------- |
 | `npm run test:android` | Run WDIO against the local Android emulator |
+| `npm run test:android:smoke` | Android smoke specs only (`tests/smoke/**`) |
 | `npm run test:ios` | Run WDIO against the local iOS Simulator |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run appium:driver:list` | List installed Appium drivers |
@@ -145,15 +146,18 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every **pull request** and *
 | Job | What it runs |
 | ----- | -------------- |
 | `typecheck` | `npm ci` + `npm run typecheck` |
+| `android-smoke` | API 34 emulator + Appium UiAutomator2 + `npm run test:android:smoke` |
 
-Appium smoke/E2E stays local for now (`npm run test:android` / `npm run test:ios`). iOS is not run in CI.
+The Android job downloads My Demo App APK **v2.2.0** (`mda-2.2.0-25.apk`) from the [official release](https://github.com/saucelabs/my-demo-app-android/releases/download/2.2.0/mda-2.2.0-25.apk) into `apps/android/` (not committed) and writes a CI `.env` (`emulator-5554` / platform `14`).
 
-**Branch protection (recommended):** GitHub → Settings → Branches → protect `main` → require the `typecheck` status check before merge.
+**iOS is not run in CI** — use local Simulator: `npm run test:ios`.
+
+**Branch protection (recommended):** GitHub → Settings → Branches → protect `main` → require `typecheck` and `android-smoke` before merge.
 
 ## Layout
 
 ```text
-.github/workflows/     # CI (typecheck on main / PRs)
+.github/workflows/     # CI (typecheck + Android smoke on main / PRs)
 apps/android/          # local APK (not committed)
 apps/ios/              # local Simulator .app (not committed)
 src/config/            # env + Android/iOS capabilities
