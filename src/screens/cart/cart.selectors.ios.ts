@@ -15,5 +15,7 @@ export const cartSelectors: CartSelectors = {
   increaseQuantityButton: '~AddPlus Icons',
   decreaseQuantityButton: '~SubtractMinus Icons',
   removeItemButton: '~Remove Item',
-  productByName: (name: string) => `-ios predicate string:label == "${name}"`,
+  // Catalog titles may include a color suffix; cart labels can vary by build
+  productByName: (name: string) =>
+    `-ios predicate string:label CONTAINS "${name}"`,
 };
