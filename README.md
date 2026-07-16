@@ -138,9 +138,22 @@ npm run test:ios
 | `npm run appium:driver:list` | List installed Appium drivers |
 | `npm run appium:driver:install` | Install UiAutomator2 + XCUITest drivers |
 
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every **pull request** and **push** to `main`.
+
+| Job | What it runs |
+| ----- | -------------- |
+| `typecheck` | `npm ci` + `npm run typecheck` |
+
+Appium smoke/E2E stays local for now (`npm run test:android` / `npm run test:ios`). iOS is not run in CI.
+
+**Branch protection (recommended):** GitHub → Settings → Branches → protect `main` → require the `typecheck` status check before merge.
+
 ## Layout
 
 ```text
+.github/workflows/     # CI (typecheck on main / PRs)
 apps/android/          # local APK (not committed)
 apps/ios/              # local Simulator .app (not committed)
 src/config/            # env + Android/iOS capabilities
