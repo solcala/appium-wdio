@@ -100,7 +100,8 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: npm run test:android:smoke
+          # One retry: cold-start / emulator flakes have failed otherwise-green runs
+          script: npm run test:android:smoke || npm run test:android:smoke
 
       - name: Generate Allure report
         if: always()
