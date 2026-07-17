@@ -1,3 +1,4 @@
+import { captureUiDebugArtifacts } from '../../helpers/debugArtifacts.js';
 import { byPlatform, isIOS } from '../../helpers/platform.js';
 import { waitAndClick, waitForDisplayed } from '../../helpers/waits.js';
 import { sideMenuSelectors as androidSelectors } from './sideMenu.selectors.android.js';
@@ -24,7 +25,15 @@ class SideMenuComponent {
   }
 
   async open(): Promise<void> {
-    await waitAndClick(this.menuButton);
+    try {
+      await waitAndClick(this.menuButton, {
+        timeout: 45_000,
+        timeoutMsg: 'Expected side menu control to be displayed',
+      });
+    } catch (error) {
+      await captureUiDebugArtifacts('side-menu-not-loaded');
+      throw error;
+    }
     if (isIOS()) {
       // Login row sits below the fold on the More menu
       await this.logInButton.scrollIntoView();

@@ -1,6 +1,7 @@
 import {
   catalogPriceForTitle,
 } from '../../fixtures/catalog.js';
+import { captureUiDebugArtifacts } from '../../helpers/debugArtifacts.js';
 import { byPlatform, isIOS } from '../../helpers/platform.js';
 import { waitAndClick, waitForDisplayed } from '../../helpers/waits.js';
 import type { CatalogSortOption } from './catalog.sort.js';
@@ -40,11 +41,16 @@ class CatalogScreen {
   }
 
   async waitUntilLoaded(): Promise<void> {
-    // Catalog chrome can lag MainActivity slightly after splash (esp. CI)
-    await waitForDisplayed(this.screen, {
-      timeout: 30_000,
-      timeoutMsg: 'Expected Catalog screen to be displayed',
-    });
+    // Catalog chrome can lag MainActivity after splash on slow CI emulators
+    try {
+      await waitForDisplayed(this.screen, {
+        timeout: 45_000,
+        timeoutMsg: 'Expected Catalog screen to be displayed',
+      });
+    } catch (error) {
+      await captureUiDebugArtifacts('catalog-not-loaded');
+      throw error;
+    }
   }
 
   async isDisplayed(): Promise<boolean> {
