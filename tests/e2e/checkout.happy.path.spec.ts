@@ -20,6 +20,9 @@ describe('Checkout happy path', function () {
 
   it('logs in, buys a product, and completes checkout', async () => {
     const user = standardUser();
+    const shipping = standardShippingAddress();
+    const payment = standardPayment({ fullName: shipping.fullName });
+
     await SideMenu.openLogIn();
     // Preset chip auto-fills username+password and avoids the iOS keyboard covering Login
     await Login.selectSavedUsername(user.username);
@@ -34,10 +37,10 @@ describe('Checkout happy path', function () {
     expect(await Cart.hasProduct(checkoutProductName)).toBe(true);
     await Cart.proceedToCheckout();
 
-    await CheckoutAddress.fill(standardShippingAddress);
+    await CheckoutAddress.fill(shipping);
     await CheckoutAddress.continueToPayment();
 
-    await CheckoutPayment.fill(standardPayment);
+    await CheckoutPayment.fill(payment);
     await CheckoutPayment.continueToReview();
 
     await CheckoutReview.placeOrder();

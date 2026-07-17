@@ -83,6 +83,11 @@ class CheckoutAddressScreen {
   async continueToPayment(): Promise<void> {
     await this.waitUntilLoaded();
     await tapCheckoutControl(this.toPaymentButton, 'Expected To Payment button');
+    if (await driver.isAlertOpen().catch(() => false)) {
+      throw new Error(
+        `Checkout address validation failed: ${await driver.getAlertText()}`
+      );
+    }
   }
 }
 
