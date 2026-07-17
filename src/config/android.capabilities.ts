@@ -15,8 +15,11 @@ export function buildAndroidCapabilities(): Capabilities.RequestedStandaloneCapa
       'appium:deviceName': deviceName,
       'appium:platformVersion': platformVersion,
       'appium:app': appPath,
-      // My Demo App transitions splash → main; wildcard avoids activity mismatch
-      'appium:appWaitActivity': '*',
+      // Wait past SplashActivity so session starts on the catalog host
+      'appium:appWaitActivity':
+        'com.saucelabs.mydemoapp.android.view.activities.MainActivity',
+      // CI emulators can take >20s splash → MainActivity
+      'appium:appWaitDuration': 60_000,
       'appium:newCommandTimeout': 240,
       'appium:autoGrantPermissions': true,
       'appium:noReset': false,

@@ -9,6 +9,7 @@ const SORT_OPTION_BY_KEY: Record<CatalogSortOption, string> = {
 };
 
 export const catalogSelectors: CatalogSelectors = {
+  // productTV contentDescription in fragment_product_catalog.xml
   screen: '~title',
   sortButton: '~Shows current sorting order and displays available sorting options',
   sortModal: 'android=new UiSelector().resourceIdMatches(".*:id/sortTV")',

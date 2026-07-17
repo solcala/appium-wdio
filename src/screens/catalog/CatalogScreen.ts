@@ -40,7 +40,9 @@ class CatalogScreen {
   }
 
   async waitUntilLoaded(): Promise<void> {
+    // Catalog chrome can lag MainActivity slightly after splash (esp. CI)
     await waitForDisplayed(this.screen, {
+      timeout: 30_000,
       timeoutMsg: 'Expected Catalog screen to be displayed',
     });
   }
