@@ -1,0 +1,154 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Keep in sync with README APK download instructions
+  ANDROID_APK_URL: https://github.com/saucelabs/my-demo-app-android/releases/download/2.2.0/mda-2.2.0-25.apk
+  ANDROID_APK_PATH: ./apps/android/mda-2.2.0-25.apk
+
+jobs:
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+  android-smoke:
+    name: android-smoke
+    needs: typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Ensure Appium UiAutomator2 driver
+        # npm ci already pulls appium-uiautomator2-driver; skip install if registered
+        run: |
+          if npx appium driver list --installed --json 2>/dev/null | grep -q '"uiautomator2"'; then
+            echo "uiautomator2 already installed"
+            npx appium driver list --installed
+          else
+            npx appium driver install uiautomator2
+          fi
+
+      - name: Download Android APK
+        run: |
+          mkdir -p apps/android
+          curl -fsSL -o "${ANDROID_APK_PATH}" "${ANDROID_APK_URL}"
+          ls -lh "${ANDROID_APK_PATH}"
+
+      - name: Write CI .env
+        run: |
+          printf '%s\n' \
+            'ANDROID_DEVICE_NAME=emulator-5554' \
+            'ANDROID_PLATFORM_VERSION=14' \
+            "APP_PATH=${ANDROID_APK_PATH}" \
+            > .env
+          cat .env
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run Android smoke on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: npm run test:android:smoke
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          if [ -d allure-results ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
+            npm run report:allure
+          else
+            mkdir -p allure-report
+            printf '%s\n' \
+              '<!DOCTYPE html><html><body>' \
+              '<h1>No Allure results produced</h1>' \
+              '<p>Android smoke did not write allure-results.</p>' \
+              '</body></html>' \
+              > allure-report/index.html
+          fi
+
+      - name: Upload Allure report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-android
+          path: allure-report
+          if-no-files-found: warn
+
+  publish-pages:
+    name: publish-pages
+    needs: android-smoke
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download Allure report
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report-android
+          path: allure-report
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

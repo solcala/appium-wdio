@@ -133,14 +133,47 @@ npm run test:ios
 | Script | Purpose |
 | -------- | --------- |
 | `npm run test:android` | Run WDIO against the local Android emulator |
+| `npm run test:android:smoke` | Android smoke specs only (`tests/smoke/**`) |
 | `npm run test:ios` | Run WDIO against the local iOS Simulator |
 | `npm run typecheck` | `tsc --noEmit` |
+| `npm run report:allure` | Generate HTML report from `allure-results/` → `allure-report/` |
+| `npm run report:allure:open` | Open the last generated Allure report locally |
 | `npm run appium:driver:list` | List installed Appium drivers |
 | `npm run appium:driver:install` | Install UiAutomator2 + XCUITest drivers |
+
+### Allure reports (local)
+
+WDIO writes raw results to `allure-results/` (gitignored). After a run:
+
+```bash
+npm run report:allure
+npm run report:allure:open
+```
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every **pull request** and **push** to `main`.
+
+| Job | What it runs |
+| ----- | -------------- |
+| `typecheck` | `npm ci` + `npm run typecheck` |
+| `android-smoke` | API 34 emulator + Appium UiAutomator2 + smoke + Allure artifact |
+| `publish-pages` | Deploys Allure HTML to GitHub Pages (**push to `main` only**) |
+
+The Android job downloads My Demo App APK **v2.2.0** (`mda-2.2.0-25.apk`) from the [official release](https://github.com/saucelabs/my-demo-app-android/releases/download/2.2.0/mda-2.2.0-25.apk) into `apps/android/` (not committed) and writes a CI `.env` (`emulator-5554` / platform `14`).
+
+On every CI run, the Allure HTML report is uploaded as the `allure-report-android` workflow artifact. On **push to `main`**, that report is also published to GitHub Pages (typically `https://<owner>.github.io/<repo>/`).
+
+**One-time Pages setup:** Settings → Pages → Build and deployment → Source: **GitHub Actions**.
+
+**iOS is not run in CI** — use local Simulator: `npm run test:ios`.
+
+**Branch protection (recommended):** GitHub → Settings → Branches → protect `main` → require `typecheck` and `android-smoke` before merge.
 
 ## Layout
 
 ```text
+.github/workflows/     # CI (typecheck, Android smoke, Allure → Pages)
 apps/android/          # local APK (not committed)
 apps/ios/              # local Simulator .app (not committed)
 src/config/            # env + Android/iOS capabilities
