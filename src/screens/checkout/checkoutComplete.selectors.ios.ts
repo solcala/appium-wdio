@@ -7,6 +7,8 @@ import type { CheckoutCompleteSelectors } from './checkoutComplete.selectors.typ
  */
 export const checkoutCompleteSelectors: CheckoutCompleteSelectors = {
   screen: '~CheckoutComplete-screen',
-  thankYouMessage: '-ios predicate string:label == "Thank you for your order"',
+  // Full copy: "Thank you for your order. Your order has been dispatched..."
+  thankYouMessage:
+    '-ios predicate string:label CONTAINS "Thank you for your order"',
   continueShoppingButton: '~ContinueShopping',
 };

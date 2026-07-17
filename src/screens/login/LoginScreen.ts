@@ -72,6 +72,29 @@ class LoginScreen {
 
   async submit(): Promise<void> {
     await this.waitUntilLoaded();
+    if (isIOS()) {
+      // Keyboard covers Login (visible=false). Dismiss via Return, then click or coordinate-tap.
+      const returnKey = $('-ios predicate string:name == "Return" OR label == "return"');
+      if (await returnKey.isExisting().catch(() => false)) {
+        await returnKey.click().catch(() => undefined);
+      }
+      const button = this.loginButton;
+      await button.waitForExist({
+        timeout: 15_000,
+        timeoutMsg: 'Expected Login button to exist',
+      });
+      if (await button.isDisplayed().catch(() => false)) {
+        await button.click();
+        return;
+      }
+      const location = await button.getLocation();
+      const size = await button.getSize();
+      await driver.execute('mobile: tap', {
+        x: Math.round(location.x + size.width / 2),
+        y: Math.round(location.y + size.height / 2),
+      });
+      return;
+    }
     await waitAndClick(this.loginButton, {
       timeoutMsg: 'Expected Login button to be displayed',
     });

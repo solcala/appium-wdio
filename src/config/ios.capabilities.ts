@@ -18,6 +18,8 @@ export function buildIosCapabilities(): Capabilities.RequestedStandaloneCapabili
       'appium:newCommandTimeout': 240,
       'appium:noReset': false,
       'appium:fullReset': false,
+      // Avoid software keyboard covering footer CTAs (To Payment / Review Order)
+      'appium:connectHardwareKeyboard': true,
       // Surfaces WDA/xcodebuild errors in Appium logs during local setup
       'appium:showXcodeLog': true,
       // First WDA build on a new Xcode/runtime can exceed default client timeouts

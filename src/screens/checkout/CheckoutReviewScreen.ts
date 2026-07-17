@@ -1,5 +1,6 @@
 import { byPlatform } from '../../helpers/platform.js';
-import { waitAndClick, waitForDisplayed } from '../../helpers/waits.js';
+import { waitForDisplayed } from '../../helpers/waits.js';
+import { tapCheckoutControl } from './checkout.form.js';
 import { checkoutReviewSelectors as androidSelectors } from './checkoutReview.selectors.android.js';
 import { checkoutReviewSelectors as iosSelectors } from './checkoutReview.selectors.ios.js';
 
@@ -32,12 +33,7 @@ class CheckoutReviewScreen {
 
   async placeOrder(): Promise<void> {
     await this.waitUntilLoaded();
-    const button = this.placeOrderButton;
-    await waitForDisplayed(button, {
-      timeoutMsg: 'Expected Place Order button to be displayed',
-    });
-    await button.scrollIntoView();
-    await waitAndClick(button);
+    await tapCheckoutControl(this.placeOrderButton, 'Expected Place Order button');
   }
 }
 
