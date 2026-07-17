@@ -3,17 +3,15 @@ import type { CheckoutPaymentSelectors } from './checkoutPayment.selectors.types
 /**
  * Locators from Sauce Labs My Demo App iOS TabBar storyboard:
  * - Payment-screen root
- * - Card fields ordered before optional billing address: name, number, expiry, CVV
+ * - Card fields matched by empty-state placeholder values
  * - Review Order button title (no dedicated a11y id)
  */
-const screenRoot = '**/XCUIElementTypeOther[`name == "Payment-screen"`]';
-
 export const checkoutPaymentSelectors: CheckoutPaymentSelectors = {
   screen: '~Payment-screen',
-  fullNameField: `-ios class chain:${screenRoot}/**/XCUIElementTypeTextField[1]`,
-  cardNumberField: `-ios class chain:${screenRoot}/**/XCUIElementTypeTextField[2]`,
-  expirationDateField: `-ios class chain:${screenRoot}/**/XCUIElementTypeTextField[3]`,
-  securityCodeField: `-ios class chain:${screenRoot}/**/XCUIElementTypeTextField[4]`,
+  fullNameField: '-ios predicate string:value == "Maxim Winter"',
+  cardNumberField: '-ios predicate string:value == "3258 1265 7568 7896"',
+  expirationDateField: '-ios predicate string:value == "03/25"',
+  securityCodeField: '-ios predicate string:value == "123"',
   reviewOrderButton:
     '-ios class chain:**/XCUIElementTypeButton[`name == "Review Order"`]',
 };

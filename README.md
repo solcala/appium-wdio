@@ -103,6 +103,7 @@ cp .env.example .env
 | `IOS_DEVICE_NAME` | Simulator from `xcrun simctl list devices available` |
 | `IOS_PLATFORM_VERSION` | Simulator iOS version |
 | `IOS_APP_PATH` | Path to the Simulator `.app` |
+| `TEST_DATA_SEED` | Optional integer seed for checkout address/payment factories (`@faker-js/faker`). Omit for non-deterministic data. Demo login users stay fixed in `src/fixtures/users.ts`. |
 
 ## Run the smoke suite
 

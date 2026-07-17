@@ -1,6 +1,6 @@
 import { byPlatform } from '../../helpers/platform.js';
-import { waitAndClick, waitForDisplayed } from '../../helpers/waits.js';
-import { fillField } from './checkout.form.js';
+import { waitForDisplayed } from '../../helpers/waits.js';
+import { fillField, dismissCheckoutKeyboard, tapCheckoutControl } from './checkout.form.js';
 import type { CheckoutPaymentInput } from './checkout.types.js';
 import { checkoutPaymentSelectors as androidSelectors } from './checkoutPayment.selectors.android.js';
 import { checkoutPaymentSelectors as iosSelectors } from './checkoutPayment.selectors.ios.js';
@@ -70,15 +70,15 @@ class CheckoutPaymentScreen {
       payment.securityCode,
       'Expected security code field'
     );
+    await dismissCheckoutKeyboard();
   }
 
   async continueToReview(): Promise<void> {
     await this.waitUntilLoaded();
-    const button = this.reviewOrderButton;
-    await button.scrollIntoView();
-    await waitAndClick(button, {
-      timeoutMsg: 'Expected Review Order button to be displayed',
-    });
+    await tapCheckoutControl(
+      this.reviewOrderButton,
+      'Expected Review Order button'
+    );
   }
 }
 

@@ -1,6 +1,6 @@
 import { byPlatform } from '../../helpers/platform.js';
-import { waitAndClick, waitForDisplayed } from '../../helpers/waits.js';
-import { fillField } from './checkout.form.js';
+import { waitForDisplayed } from '../../helpers/waits.js';
+import { fillField, dismissCheckoutKeyboard, tapCheckoutControl } from './checkout.form.js';
 import type { CheckoutAddressInput } from './checkout.types.js';
 import { checkoutAddressSelectors as androidSelectors } from './checkoutAddress.selectors.android.js';
 import { checkoutAddressSelectors as iosSelectors } from './checkoutAddress.selectors.ios.js';
@@ -77,15 +77,17 @@ class CheckoutAddressScreen {
       );
     }
     await fillField(this.countryField, address.country, 'Expected country field');
+    await dismissCheckoutKeyboard();
   }
 
   async continueToPayment(): Promise<void> {
     await this.waitUntilLoaded();
-    const button = this.toPaymentButton;
-    await button.scrollIntoView();
-    await waitAndClick(button, {
-      timeoutMsg: 'Expected To Payment button to be displayed',
-    });
+    await tapCheckoutControl(this.toPaymentButton, 'Expected To Payment button');
+    if (await driver.isAlertOpen().catch(() => false)) {
+      throw new Error(
+        `Checkout address validation failed: ${await driver.getAlertText()}`
+      );
+    }
   }
 }
 
