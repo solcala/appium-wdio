@@ -19,9 +19,12 @@ export function buildAndroidCapabilities(): Capabilities.RequestedStandaloneCapa
       'appium:appWaitActivity':
         'com.saucelabs.mydemoapp.android.view.activities.MainActivity',
       // CI emulators can take >20s splash → MainActivity
-      'appium:appWaitDuration': 60_000,
+      'appium:appWaitDuration': 90_000,
+      'appium:uiautomator2ServerLaunchTimeout': 90_000,
+      'appium:adbExecTimeout': 90_000,
       'appium:newCommandTimeout': 240,
       'appium:autoGrantPermissions': true,
+      'appium:disableWindowAnimation': true,
       'appium:noReset': false,
       'appium:fullReset': false,
     },

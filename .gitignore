@@ -18,6 +18,7 @@ apps/ios/**
 
 # WDIO / test artifacts
 .wdio-chrome-data/
+artifacts/
 allure-results/
 allure-report/
 test-results/
